@@ -182,50 +182,51 @@ export default function Home() {
   };
 
   const sendContact = async () => {
-    if (!contactName || !contactEmail || !contactMessage) {
-      setContactStatus("Täytä nimi, sähköposti ja viesti.");
-      return;
-    }
+  if (!contactName || !contactEmail || !contactMessage) {
+    setContactStatus("Täytä kaikki kentät.");
+    return;
+  }
 
-    setSending(true);
-    setContactStatus("");
+  setSending(true);
+  setContactStatus("");
 
-    try {
-      const response = await fetch(formEndpoint, {
+  try {
+    const response = await fetch(
+      "https://curious-pigsty-897.forms.space/019e4c53-9bd7-7064-aa2f-589032f3be8f",
+      {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: JSON.stringify({
-          subject: contactSubject,
+        body: new URLSearchParams({
           name: contactName,
           email: contactEmail,
+          subject: contactSubject,
           message: contactMessage,
-          visibleReceiver: displayEmail,
-          realReceiver: email,
-        }),
-      });
-
-      if (response.ok) {
-        setContactStatus("Viesti lähetetty onnistuneesti!");
-        setContactName("");
-        setContactEmail("");
-        setContactMessage("");
-
-        setTimeout(() => {
-          setContactOpen(false);
-          setContactStatus("");
-        }, 1400);
-      } else {
-        setContactStatus("Lähetys epäonnistui. Kokeile uudelleen.");
+        }).toString(),
       }
-    } catch {
-      setContactStatus("Yhteysvirhe. Kokeile uudelleen.");
-    } finally {
-      setSending(false);
+    );
+
+    if (response.ok) {
+      setContactStatus("Viesti lähetetty!");
+
+      setContactName("");
+      setContactEmail("");
+      setContactMessage("");
+
+      setTimeout(() => {
+        setContactOpen(false);
+      }, 1200);
+    } else {
+      setContactStatus("Lähetys epäonnistui.");
     }
-  };
+  } catch (error) {
+    setContactStatus("Yhteysvirhe. Kokeile uudelleen.");
+  }
+
+  setSending(false);
+};
 
   const startDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     setDragging(true);
