@@ -1,15 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const email = "jooseppimies69@gmail.com";
 const displayEmail = "info@hannula.info";
-
-function gmailLink(subject: string, body = "") {
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(
-    subject
-  )}&body=${encodeURIComponent(body)}`;
-}
+const discordInvite = "https://discord.gg/FSnF4KFsT";
+const formEndpoint =
+  "https://curious-pigsty-897.forms.space/019e4c53-9bd7-7064-aa2f-589032f3be8f";
 
 const workExperience = [
   {
@@ -158,17 +155,102 @@ export default function Home() {
   const musicRef = useRef<HTMLAudioElement>(null);
   const danceVideoRef = useRef<HTMLVideoElement>(null);
 
+  const [visits, setVisits] = useState(0);
   const [contactOpen, setContactOpen] = useState(false);
   const [contactSubject, setContactSubject] = useState("");
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
   const [contactMessage, setContactMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [contactStatus, setContactStatus] = useState("");
+
+  const [boxPosition, setBoxPosition] = useState({ x: 24, y: 24 });
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0, boxX: 0, boxY: 0 });
+
+  useEffect(() => {
+    const currentVisits = Number(localStorage.getItem("portfolio-visits") || "0");
+    const newVisits = currentVisits + 1;
+    localStorage.setItem("portfolio-visits", String(newVisits));
+    setVisits(newVisits);
+  }, []);
 
   const openContact = (subject: string) => {
     setContactSubject(subject);
     setContactOpen(true);
+    setContactStatus("");
   };
 
-  const sendContact = () => {
-    window.open(gmailLink(contactSubject, contactMessage), "_blank");
+  const sendContact = async () => {
+    if (!contactName || !contactEmail || !contactMessage) {
+      setContactStatus("Täytä nimi, sähköposti ja viesti.");
+      return;
+    }
+
+    setSending(true);
+    setContactStatus("");
+
+    try {
+      const response = await fetch(formEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          subject: contactSubject,
+          name: contactName,
+          email: contactEmail,
+          message: contactMessage,
+          visibleReceiver: displayEmail,
+          realReceiver: email,
+        }),
+      });
+
+      if (response.ok) {
+        setContactStatus("Viesti lähetetty onnistuneesti!");
+        setContactName("");
+        setContactEmail("");
+        setContactMessage("");
+
+        setTimeout(() => {
+          setContactOpen(false);
+          setContactStatus("");
+        }, 1400);
+      } else {
+        setContactStatus("Lähetys epäonnistui. Kokeile uudelleen.");
+      }
+    } catch {
+      setContactStatus("Yhteysvirhe. Kokeile uudelleen.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const startDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    setDragging(true);
+    dragStart.current = {
+      x: event.clientX,
+      y: event.clientY,
+      boxX: boxPosition.x,
+      boxY: boxPosition.y,
+    };
+  };
+
+  const onDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+
+    const dx = event.clientX - dragStart.current.x;
+    const dy = event.clientY - dragStart.current.y;
+
+    setBoxPosition({
+      x: Math.max(8, dragStart.current.boxX + dx),
+      y: Math.max(8, dragStart.current.boxY + dy),
+    });
+  };
+
+  const stopDrag = () => {
+    setDragging(false);
   };
 
   const openPartner = async (url: string, sound?: boolean) => {
@@ -208,41 +290,88 @@ export default function Home() {
       <audio ref={lahetAudio} src="/lahet.mp3" preload="auto" />
       <audio ref={musicRef} src="/atcm.mp3" preload="auto" />
 
-      {contactOpen && (
-        <div className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-md rounded-3xl border border-green-400/40 bg-zinc-950/95 p-5 shadow-[0_0_40px_rgba(34,197,94,0.25)] backdrop-blur">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-green-400">
-                Yhteydenotto
-              </p>
-              <h3 className="mt-2 text-2xl font-black text-white">
-                {contactSubject}
-              </h3>
-              <p className="mt-1 text-sm text-zinc-400">
-                Vastaanottaja: {displayEmail}
-              </p>
-            </div>
+      <div className="fixed right-4 top-4 z-40 rounded-2xl border border-green-400/40 bg-black/80 px-5 py-3 text-right shadow-[0_0_30px_rgba(34,197,94,0.25)] backdrop-blur-md">
+        <p className="text-xs uppercase tracking-[0.25em] text-green-400">
+          Käynnit
+        </p>
+        <p className="text-2xl font-black text-green-300">{visits}</p>
+      </div>
 
-            <button
-              onClick={() => setContactOpen(false)}
-              className="rounded-full border border-zinc-700 px-3 py-1 text-sm text-zinc-300 hover:bg-zinc-800"
-            >
-              X
-            </button>
+      {contactOpen && (
+        <div
+          className="fixed z-50 w-[calc(100%-2rem)] max-w-md rounded-3xl border border-green-400/40 bg-zinc-950/95 p-5 shadow-[0_0_40px_rgba(34,197,94,0.25)] backdrop-blur"
+          style={{
+            right: boxPosition.x,
+            bottom: boxPosition.y,
+          }}
+          onPointerMove={onDrag}
+          onPointerUp={stopDrag}
+          onPointerLeave={stopDrag}
+        >
+          <div
+            onPointerDown={startDrag}
+            className="cursor-move rounded-2xl border border-zinc-800 bg-black/60 p-3"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-green-400">
+                  Yhteydenotto
+                </p>
+
+                <h3 className="mt-2 text-2xl font-black text-white">
+                  {contactSubject}
+                </h3>
+
+                <p className="mt-1 text-sm text-zinc-400">
+                  Vastaanottaja: {displayEmail}
+                </p>
+
+                <p className="mt-1 text-xs text-zinc-500">
+                  Vedä tästä palkista siirtääksesi laatikkoa.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setContactOpen(false)}
+                className="rounded-full border border-zinc-700 px-3 py-1 text-sm text-zinc-300 hover:bg-zinc-800"
+              >
+                X
+              </button>
+            </div>
           </div>
+
+          <input
+            value={contactName}
+            onChange={(e) => setContactName(e.target.value)}
+            placeholder="Nimi"
+            className="mt-5 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+          />
+
+          <input
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            type="email"
+            placeholder="Sähköpostiosoite"
+            className="mt-4 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+          />
 
           <textarea
             value={contactMessage}
             onChange={(e) => setContactMessage(e.target.value)}
             placeholder="Kirjoita viesti tähän..."
-            className="mt-5 min-h-32 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+            className="mt-4 min-h-32 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
           />
+
+          {contactStatus && (
+            <p className="mt-3 text-sm text-green-300">{contactStatus}</p>
+          )}
 
           <button
             onClick={sendContact}
-            className="mt-4 w-full rounded-full bg-green-400 px-6 py-4 font-bold text-black transition hover:scale-[1.02]"
+            disabled={sending}
+            className="mt-4 w-full rounded-full bg-green-400 px-6 py-4 font-bold text-black transition hover:scale-[1.02] disabled:opacity-60"
           >
-            Avaa sähköposti
+            {sending ? "Lähetetään..." : "Lähetä viesti"}
           </button>
         </div>
       )}
@@ -518,6 +647,25 @@ export default function Home() {
                 )}
               </div>
             ))}
+
+            <a
+              href={discordInvite}
+              target="_blank"
+              className="rounded-3xl border border-indigo-400/30 bg-indigo-950 p-6 transition hover:scale-[1.01] sm:p-8"
+            >
+              <h3 className="text-2xl font-bold text-indigo-300">
+                Liity Discordiin
+              </h3>
+
+              <p className="mt-4 text-base leading-8 text-zinc-300 sm:text-lg">
+                Tule mukaan yhteisöön, keskustele, seuraa sisältöä ja pysy
+                mukana tulevissa projekteissa.
+              </p>
+
+              <div className="mt-6 inline-block rounded-full bg-indigo-400 px-6 py-3 font-bold text-black">
+                Avaa Discord
+              </div>
+            </a>
 
             <div className="rounded-3xl border border-green-400/20 bg-zinc-950 p-6 sm:p-8">
               <h3 className="text-2xl font-bold text-green-300">
