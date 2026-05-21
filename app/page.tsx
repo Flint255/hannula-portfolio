@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const email = "jooseppimies69@gmail.com";
 const displayEmail = "info@hannula.info";
 const discordInvite = "https://discord.gg/FSnF4KFsT";
-const formEndpoint =
+const formAction =
   "https://curious-pigsty-897.forms.space/019e4c53-9bd7-7064-aa2f-589032f3be8f";
 
 const workExperience = [
@@ -158,15 +157,10 @@ export default function Home() {
   const [visits, setVisits] = useState(0);
   const [contactOpen, setContactOpen] = useState(false);
   const [contactSubject, setContactSubject] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactMessage, setContactMessage] = useState("");
-  const [sending, setSending] = useState(false);
-  const [contactStatus, setContactStatus] = useState("");
 
   const [boxPosition, setBoxPosition] = useState({ x: 24, y: 24 });
   const [dragging, setDragging] = useState(false);
-  const dragStart = useRef({ x: 0, y: 0, boxX: 0, boxY: 0 });
+  const dragStart = useRef({ x: 0, y: 0, boxX: 24, boxY: 24 });
 
   useEffect(() => {
     const currentVisits = Number(localStorage.getItem("portfolio-visits") || "0");
@@ -175,83 +169,48 @@ export default function Home() {
     setVisits(newVisits);
   }, []);
 
-  const openContact = (subject: string) => {
-    setContactSubject(subject);
-    setContactOpen(true);
-    setContactStatus("");
-  };
+  useEffect(() => {
+    if (!dragging) return;
 
-  const sendContact = async () => {
-  if (!contactName || !contactEmail || !contactMessage) {
-    setContactStatus("Täytä kaikki kentät.");
-    return;
-  }
+    const handleMove = (event: PointerEvent) => {
+      const dx = event.clientX - dragStart.current.x;
+      const dy = event.clientY - dragStart.current.y;
 
-  setSending(true);
-  setContactStatus("");
+      setBoxPosition({
+        x: Math.max(8, dragStart.current.boxX - dx),
+        y: Math.max(8, dragStart.current.boxY - dy),
+      });
+    };
 
-  try {
-    const response = await fetch(
-      "https://curious-pigsty-897.forms.space/019e4c53-9bd7-7064-aa2f-589032f3be8f",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          name: contactName,
-          email: contactEmail,
-          subject: contactSubject,
-          message: contactMessage,
-        }).toString(),
-      }
-    );
+    const handleUp = () => {
+      setDragging(false);
+    };
 
-    if (response.ok) {
-      setContactStatus("Viesti lähetetty!");
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
 
-      setContactName("");
-      setContactEmail("");
-      setContactMessage("");
-
-      setTimeout(() => {
-        setContactOpen(false);
-      }, 1200);
-    } else {
-      setContactStatus("Lähetys epäonnistui.");
-    }
-  } catch (error) {
-    setContactStatus("Yhteysvirhe. Kokeile uudelleen.");
-  }
-
-  setSending(false);
-};
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+    };
+  }, [dragging]);
 
   const startDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    setDragging(true);
+    event.preventDefault();
+
     dragStart.current = {
       x: event.clientX,
       y: event.clientY,
       boxX: boxPosition.x,
       boxY: boxPosition.y,
     };
+
+    setDragging(true);
   };
 
-  const onDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
-
-    const dx = event.clientX - dragStart.current.x;
-    const dy = event.clientY - dragStart.current.y;
-
-    setBoxPosition({
-      x: Math.max(8, dragStart.current.boxX + dx),
-      y: Math.max(8, dragStart.current.boxY + dy),
-    });
-  };
-
-  const stopDrag = () => {
-    setDragging(false);
+  const openContact = (subject: string) => {
+    setContactSubject(subject);
+    setContactOpen(true);
   };
 
   const openPartner = async (url: string, sound?: boolean) => {
@@ -298,6 +257,14 @@ export default function Home() {
         <p className="text-2xl font-black text-green-300">{visits}</p>
       </div>
 
+      <a
+        href={discordInvite}
+        target="_blank"
+        className="fixed bottom-4 left-4 z-40 rounded-2xl bg-[#5865F2] px-5 py-3 font-black text-white shadow-[0_0_30px_rgba(88,101,242,0.45)] transition hover:scale-105"
+      >
+        Discord
+      </a>
+
       {contactOpen && (
         <div
           className="fixed z-50 w-[calc(100%-2rem)] max-w-md rounded-3xl border border-green-400/40 bg-zinc-950/95 p-5 shadow-[0_0_40px_rgba(34,197,94,0.25)] backdrop-blur"
@@ -305,13 +272,10 @@ export default function Home() {
             right: boxPosition.x,
             bottom: boxPosition.y,
           }}
-          onPointerMove={onDrag}
-          onPointerUp={stopDrag}
-          onPointerLeave={stopDrag}
         >
           <div
             onPointerDown={startDrag}
-            className="cursor-move rounded-2xl border border-zinc-800 bg-black/60 p-3"
+            className="cursor-move select-none rounded-2xl border border-zinc-800 bg-black/60 p-3"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -334,6 +298,7 @@ export default function Home() {
 
               <button
                 onClick={() => setContactOpen(false)}
+                type="button"
                 className="rounded-full border border-zinc-700 px-3 py-1 text-sm text-zinc-300 hover:bg-zinc-800"
               >
                 X
@@ -341,39 +306,39 @@ export default function Home() {
             </div>
           </div>
 
-          <input
-            value={contactName}
-            onChange={(e) => setContactName(e.target.value)}
-            placeholder="Nimi"
-            className="mt-5 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
-          />
+          <form action={formAction} method="POST" className="mt-5">
+            <input type="hidden" name="subject" value={contactSubject} />
+            <input type="hidden" name="_redirect" value="https://hannula.info" />
 
-          <input
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            type="email"
-            placeholder="Sähköpostiosoite"
-            className="mt-4 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
-          />
+            <input
+              name="name"
+              placeholder="Nimi"
+              required
+              className="w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+            />
 
-          <textarea
-            value={contactMessage}
-            onChange={(e) => setContactMessage(e.target.value)}
-            placeholder="Kirjoita viesti tähän..."
-            className="mt-4 min-h-32 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
-          />
+            <input
+              name="email"
+              type="email"
+              placeholder="Sähköpostiosoite"
+              required
+              className="mt-4 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+            />
 
-          {contactStatus && (
-            <p className="mt-3 text-sm text-green-300">{contactStatus}</p>
-          )}
+            <textarea
+              name="message"
+              placeholder="Kirjoita viesti tähän..."
+              required
+              className="mt-4 min-h-32 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+            />
 
-          <button
-            onClick={sendContact}
-            disabled={sending}
-            className="mt-4 w-full rounded-full bg-green-400 px-6 py-4 font-bold text-black transition hover:scale-[1.02] disabled:opacity-60"
-          >
-            {sending ? "Lähetetään..." : "Lähetä viesti"}
-          </button>
+            <button
+              type="submit"
+              className="mt-4 w-full rounded-full bg-green-400 px-6 py-4 font-bold text-black transition hover:scale-[1.02]"
+            >
+              Lähetä viesti
+            </button>
+          </form>
         </div>
       )}
 
