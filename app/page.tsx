@@ -1,13 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
-const email = "hannula.henriks@gmail.com";
+const email = "jooseppimies69@gmail.com";
+const displayEmail = "info@hannula.info";
 
-function contactLink(subject: string) {
+function gmailLink(subject: string, body = "") {
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(
     subject
-  )}`;
+  )}&body=${encodeURIComponent(body)}`;
 }
 
 const workExperience = [
@@ -157,6 +158,19 @@ export default function Home() {
   const musicRef = useRef<HTMLAudioElement>(null);
   const danceVideoRef = useRef<HTMLVideoElement>(null);
 
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+
+  const openContact = (subject: string) => {
+    setContactSubject(subject);
+    setContactOpen(true);
+  };
+
+  const sendContact = () => {
+    window.open(gmailLink(contactSubject, contactMessage), "_blank");
+  };
+
   const openPartner = async (url: string, sound?: boolean) => {
     if (sound && lahetAudio.current) {
       lahetAudio.current.currentTime = 0;
@@ -194,6 +208,45 @@ export default function Home() {
       <audio ref={lahetAudio} src="/lahet.mp3" preload="auto" />
       <audio ref={musicRef} src="/atcm.mp3" preload="auto" />
 
+      {contactOpen && (
+        <div className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-md rounded-3xl border border-green-400/40 bg-zinc-950/95 p-5 shadow-[0_0_40px_rgba(34,197,94,0.25)] backdrop-blur">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-green-400">
+                Yhteydenotto
+              </p>
+              <h3 className="mt-2 text-2xl font-black text-white">
+                {contactSubject}
+              </h3>
+              <p className="mt-1 text-sm text-zinc-400">
+                Vastaanottaja: {displayEmail}
+              </p>
+            </div>
+
+            <button
+              onClick={() => setContactOpen(false)}
+              className="rounded-full border border-zinc-700 px-3 py-1 text-sm text-zinc-300 hover:bg-zinc-800"
+            >
+              X
+            </button>
+          </div>
+
+          <textarea
+            value={contactMessage}
+            onChange={(e) => setContactMessage(e.target.value)}
+            placeholder="Kirjoita viesti tähän..."
+            className="mt-5 min-h-32 w-full rounded-2xl border border-zinc-700 bg-black p-4 text-white outline-none focus:border-green-400"
+          />
+
+          <button
+            onClick={sendContact}
+            className="mt-4 w-full rounded-full bg-green-400 px-6 py-4 font-bold text-black transition hover:scale-[1.02]"
+          >
+            Avaa sähköposti
+          </button>
+        </div>
+      )}
+
       <section className="min-h-screen overflow-hidden">
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-3">
           <div className="relative min-h-[45vh] overflow-hidden lg:min-h-screen">
@@ -218,6 +271,8 @@ export default function Home() {
               Tuotannon osaamista, sisällöntuotantoa ja käytännön palveluita
               saman henkilöbrändin alla.
             </p>
+
+            <p className="mt-4 text-green-300">{displayEmail}</p>
 
             <div className="mt-10 grid w-full max-w-xl gap-4">
               <a
@@ -396,13 +451,12 @@ export default function Home() {
                   Kick-kanava
                 </a>
 
-                <a
-                  href={contactLink("Yhteistyö / Flintti")}
-                  target="_blank"
+                <button
+                  onClick={() => openContact("Yhteistyö / Flintti")}
                   className="rounded-full border border-green-400 px-7 py-4 font-bold text-green-300"
                 >
                   Yhteistyö
-                </a>
+                </button>
               </div>
             </div>
 
@@ -441,13 +495,12 @@ export default function Home() {
                 key={service.title}
                 className="rounded-3xl border border-green-400/20 bg-zinc-950 p-6 transition hover:scale-[1.01] sm:p-8"
               >
-                <a
-                  href={contactLink(service.title)}
-                  target="_blank"
-                  className="text-2xl font-bold text-green-300 hover:underline"
+                <button
+                  onClick={() => openContact(service.title)}
+                  className="text-left text-2xl font-bold text-green-300 hover:underline"
                 >
                   {service.title}
-                </a>
+                </button>
 
                 <p className="mt-4 text-base leading-8 text-zinc-300 sm:text-lg">
                   {service.text}
@@ -522,13 +575,12 @@ export default function Home() {
                   />
                 )}
 
-                <a
-                  href={contactLink(service.title)}
-                  target="_blank"
+                <button
+                  onClick={() => openContact(service.title)}
                   className="mt-6 inline-block rounded-full bg-orange-400 px-6 py-3 font-bold text-black"
                 >
                   Lähetä sähköposti
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -550,13 +602,12 @@ export default function Home() {
             kehitysehdotuksista on tervetullutta.
           </p>
 
-          <a
-            href={contactLink("Palaute nettisivustosta")}
-            target="_blank"
+          <button
+            onClick={() => openContact("Palaute nettisivustosta")}
             className="mt-10 inline-block rounded-full bg-white px-10 py-5 text-lg font-bold text-black transition hover:scale-105"
           >
             Lähetä palautetta
-          </a>
+          </button>
         </div>
       </section>
     </main>
