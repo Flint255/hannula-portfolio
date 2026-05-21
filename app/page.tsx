@@ -2,6 +2,14 @@
 
 import { useRef } from "react";
 
+const email = "hannula.henriks@gmail.com";
+
+function contactLink(subject: string) {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(
+    subject
+  )}`;
+}
+
 const workExperience = [
   {
     role: "Alkutuotannon neuvoja",
@@ -45,11 +53,7 @@ const workExperience = [
   },
 ];
 
-const bestOfMe = [
-  "Työnjohto",
-  "Laadunvalvonta",
-  "Projektinhallinta",
-];
+const bestOfMe = ["Työnjohto", "Laadunvalvonta", "Projektinhallinta"];
 
 const specialSkills = [
   "Excel",
@@ -64,7 +68,8 @@ const specialSkills = [
 const creatorServices = [
   {
     title: "Yhteistyöt ja kaupalliset kampanjat",
-    text: "Mahdollisuus mainostaa somealustani kautta tuotteita.",
+    text: "Tässä voisi olla sinun jäätelötuote.",
+    video: "/outona.mp4",
   },
   {
     title: "OBS-avustus",
@@ -127,6 +132,7 @@ const localServices = [
   {
     title: "Siivouspalvelut",
     text: "Imurointi, roskien vienti, keittiön siivous, kissan vessa tyhjennys ja täyttö.",
+    video: "/hiustenpesu.mp4",
   },
   {
     title: "Kissan huolto",
@@ -146,12 +152,6 @@ const localServices = [
   },
 ];
 
-function mailLink(subject: string) {
-  return `mailto:hannula.henriks@gmail.com?subject=${encodeURIComponent(
-    subject
-  )}`;
-}
-
 export default function Home() {
   const lahetAudio = useRef<HTMLAudioElement>(null);
   const musicRef = useRef<HTMLAudioElement>(null);
@@ -165,10 +165,7 @@ export default function Home() {
         await lahetAudio.current.play();
       } catch {}
 
-      setTimeout(() => {
-        window.open(url, "_blank");
-      }, 700);
-
+      setTimeout(() => window.open(url, "_blank"), 700);
       return;
     }
 
@@ -193,99 +190,90 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-black font-sans text-white">
+    <main className="min-h-screen overflow-x-hidden bg-black font-sans text-white">
       <audio ref={lahetAudio} src="/lahet.mp3" preload="auto" />
       <audio ref={musicRef} src="/atcm.mp3" preload="auto" />
 
-      {/* HERO */}
-
       <section className="min-h-screen overflow-hidden">
-        <div className="grid min-h-screen md:grid-cols-3">
-          <div className="relative overflow-hidden">
+        <div className="grid min-h-screen grid-cols-1 lg:grid-cols-3">
+          <div className="relative min-h-[45vh] overflow-hidden lg:min-h-screen">
             <img
               src="/henkka.jpg"
               alt="Henrik Hannula"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
             />
-
             <div className="absolute inset-0 bg-black/40" />
           </div>
 
-          <div className="flex flex-col items-center justify-center px-8 py-16 text-center">
-            <p className="mb-4 text-base uppercase tracking-[0.4em] text-zinc-500">
+          <div className="flex min-h-[70vh] flex-col items-center justify-center px-5 py-14 text-center sm:px-8 lg:min-h-screen">
+            <p className="mb-4 text-xs uppercase tracking-[0.35em] text-zinc-500 sm:text-base">
               Henrik Hannula
             </p>
 
-            <h1 className="text-6xl font-black tracking-tight md:text-8xl">
+            <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
               Henkan elämä.
             </h1>
 
-            <p className="mt-6 max-w-xl text-xl leading-9 text-zinc-300">
+            <p className="mt-6 max-w-xl text-base leading-8 text-zinc-300 sm:text-xl sm:leading-9">
               Tuotannon osaamista, sisällöntuotantoa ja käytännön palveluita
               saman henkilöbrändin alla.
             </p>
 
-            <div className="mt-12 grid w-full gap-4">
+            <div className="mt-10 grid w-full max-w-xl gap-4">
               <a
                 href="#osaaminen"
-                className="rounded-3xl border border-blue-400/30 bg-blue-950 p-8 transition duration-300 hover:scale-[1.02]"
+                className="rounded-3xl border border-blue-400/30 bg-blue-950 p-6 transition duration-300 hover:scale-[1.02] sm:p-8"
               >
-                <h2 className="text-3xl font-bold">Osaaminen</h2>
-
-                <p className="mt-3 text-blue-100/80">
+                <h2 className="text-2xl font-bold sm:text-3xl">Osaaminen</h2>
+                <p className="mt-3 text-sm text-blue-100/80 sm:text-base">
                   Tuotannon, laadunvalvonnan ja työnjohdon osaamista.
                 </p>
               </a>
 
               <a
                 href="#sisallontuottaja"
-                className="rounded-3xl border border-green-400/30 bg-green-950 p-8 transition duration-300 hover:scale-[1.02]"
+                className="rounded-3xl border border-green-400/30 bg-green-950 p-6 transition duration-300 hover:scale-[1.02] sm:p-8"
               >
-                <h2 className="text-3xl font-bold text-green-300">
+                <h2 className="text-2xl font-bold text-green-300 sm:text-3xl">
                   Sisällöntuottaja
                 </h2>
-
-                <p className="mt-3 text-green-100/80">
+                <p className="mt-3 text-sm text-green-100/80 sm:text-base">
                   Flintti — Verified Kick & Twitch streamer.
                 </p>
               </a>
 
               <a
                 href="#projektit"
-                className="rounded-3xl border border-orange-400/30 bg-orange-950 p-8 transition duration-300 hover:scale-[1.02]"
+                className="rounded-3xl border border-orange-400/30 bg-orange-950 p-6 transition duration-300 hover:scale-[1.02] sm:p-8"
               >
-                <h2 className="text-3xl font-bold text-orange-200">
+                <h2 className="text-2xl font-bold text-orange-200 sm:text-3xl">
                   Keikkatyöt & Projektit
                 </h2>
-
-                <p className="mt-3 text-orange-100/70">
+                <p className="mt-3 text-sm text-orange-100/70 sm:text-base">
                   Käytännön palveluita ja pieniä projekteja.
                 </p>
               </a>
             </div>
           </div>
 
-          <div className="relative overflow-hidden">
+          <div className="relative min-h-[45vh] overflow-hidden lg:min-h-screen">
             <img
               src="/prosessilaite.png"
               alt="Prosessilaite"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
             />
-
             <div className="absolute inset-0 bg-black/30" />
           </div>
         </div>
       </section>
 
-      {/* OSAAMINEN */}
-
-      <section id="osaaminen" className="min-h-screen bg-black px-6 py-24">
+      <section id="osaaminen" className="bg-black px-5 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <p className="text-base uppercase tracking-[0.35em] text-blue-400">
+          <p className="text-sm uppercase tracking-[0.35em] text-blue-400 sm:text-base">
             01 / Osaaminen
           </p>
 
-          <h2 className="mt-4 text-5xl font-black md:text-7xl">
+          <h2 className="mt-4 text-4xl font-black sm:text-5xl md:text-7xl">
             Tuotannon taidot.
           </h2>
 
@@ -293,11 +281,10 @@ export default function Home() {
             {bestOfMe.map((item) => (
               <div
                 key={item}
-                className="rounded-3xl border border-blue-400/30 bg-blue-950 p-8"
+                className="rounded-3xl border border-blue-400/30 bg-blue-950 p-6 sm:p-8"
               >
                 <p className="text-blue-300">Erityisosaaminen</p>
-
-                <h3 className="mt-4 text-3xl font-bold">{item}</h3>
+                <h3 className="mt-4 text-2xl font-bold sm:text-3xl">{item}</h3>
               </div>
             ))}
           </div>
@@ -306,7 +293,7 @@ export default function Home() {
             {specialSkills.map((skill) => (
               <div
                 key={skill}
-                className="rounded-full border border-blue-400/30 bg-blue-950 px-6 py-4 font-semibold"
+                className="rounded-full border border-blue-400/30 bg-blue-950 px-5 py-3 text-sm font-semibold sm:px-6 sm:py-4 sm:text-base"
               >
                 {skill}
               </div>
@@ -319,21 +306,22 @@ export default function Home() {
                 key={`${job.role}-${job.company}-${job.time}`}
                 href={job.url}
                 target="_blank"
-                className="rounded-3xl border border-blue-400/20 bg-blue-950 p-8 transition hover:scale-[1.01]"
+                className="rounded-3xl border border-blue-400/20 bg-blue-950 p-6 transition hover:scale-[1.01] sm:p-8"
               >
-                <div className="flex flex-col gap-4 md:flex-row md:justify-between">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h3 className="text-3xl font-bold">{job.role}</h3>
-
+                    <h3 className="text-2xl font-bold sm:text-3xl">
+                      {job.role}
+                    </h3>
                     <p className="mt-2 text-blue-300">{job.company}</p>
                   </div>
 
-                  <div className="h-fit rounded-full bg-blue-500/20 px-5 py-3 text-blue-200">
+                  <div className="h-fit w-fit rounded-full bg-blue-500/20 px-5 py-3 text-blue-200">
                     {job.time}
                   </div>
                 </div>
 
-                <p className="mt-5 text-lg leading-8 text-zinc-300">
+                <p className="mt-5 text-base leading-8 text-zinc-300 sm:text-lg">
                   {job.description}
                 </p>
               </a>
@@ -342,60 +330,59 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SISÄLLÖNTUOTTAJA */}
-
       <section
         id="sisallontuottaja"
-        className="min-h-screen bg-black px-6 py-24"
+        className="bg-black px-5 py-20 sm:px-6 sm:py-24"
       >
         <div className="mx-auto max-w-7xl">
-          <p className="text-base uppercase tracking-[0.35em] text-green-400">
+          <p className="text-sm uppercase tracking-[0.35em] text-green-400 sm:text-base">
             02 / Sisällöntuottaja
           </p>
 
           <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_1.2fr_1fr]">
-            <div className="rounded-[2rem] border border-green-400/30 bg-zinc-950 p-8">
+            <div className="rounded-[2rem] border border-green-400/30 bg-zinc-950 p-6 sm:p-8">
               <h3 className="text-2xl font-bold text-green-300">
                 Musiikkivideo tulossa
               </h3>
 
-              <div className="mt-6">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   onClick={startMusic}
-                  className="rounded-full bg-green-400 px-6 py-3 font-bold text-black"
+                  className="rounded-full bg-green-400 px-5 py-3 font-bold text-black"
                 >
                   Käynnistä biisi
                 </button>
 
                 <button
                   onClick={stopMusic}
-                  className="ml-4 rounded-full border border-green-400 px-6 py-3 font-bold text-green-300"
+                  className="rounded-full border border-green-400 px-5 py-3 font-bold text-green-300"
                 >
                   Pysäytä
                 </button>
-
-                <video
-                  ref={danceVideoRef}
-                  loop
-                  muted
-                  playsInline
-                  className="mt-6 h-[320px] w-full rounded-2xl object-cover"
-                >
-                  <source src="/flintdance.mp4" type="video/mp4" />
-                </video>
               </div>
+
+              <video
+                ref={danceVideoRef}
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="mt-6 aspect-video w-full rounded-2xl object-cover"
+              >
+                <source src="/flintdance.mp4" type="video/mp4" />
+              </video>
             </div>
 
-            <div className="rounded-[2rem] border border-green-400/30 bg-green-950/40 p-10">
+            <div className="rounded-[2rem] border border-green-400/30 bg-green-950/40 p-6 sm:p-10">
               <p className="uppercase tracking-[0.35em] text-green-300">
                 Pääartikkeli
               </p>
 
-              <h2 className="mt-4 text-5xl font-black md:text-7xl">
+              <h2 className="mt-4 text-5xl font-black sm:text-6xl md:text-7xl">
                 Flintti
               </h2>
 
-              <p className="mt-6 text-xl leading-9 text-green-100/80">
+              <p className="mt-6 text-base leading-8 text-green-100/80 sm:text-xl sm:leading-9">
                 Verified Kick & Twitch streamer. Keskimäärin noin 120 katsojaa
                 ja yli 2000 seuraajaa.
               </p>
@@ -404,51 +391,82 @@ export default function Home() {
                 <a
                   href="https://kick.com/flintti"
                   target="_blank"
-                  className="rounded-full bg-green-400 px-8 py-4 text-lg font-bold text-black"
+                  className="rounded-full bg-green-400 px-7 py-4 font-bold text-black"
                 >
                   Kick-kanava
                 </a>
 
                 <a
-                  href={mailLink("Yhteistyö / Flintti")}
-                  className="rounded-full border border-green-400 px-8 py-4 text-lg font-bold text-green-300"
+                  href={contactLink("Yhteistyö / Flintti")}
+                  target="_blank"
+                  className="rounded-full border border-green-400 px-7 py-4 font-bold text-green-300"
                 >
                   Yhteistyö
                 </a>
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-green-400/30 bg-zinc-950 p-8">
+            <div className="rounded-[2rem] border border-green-400/30 bg-zinc-950 p-6 sm:p-8">
               <h3 className="text-2xl font-bold text-green-300">
+                Vuoden 2025 klippi
+              </h3>
+
+              <video
+                controls
+                preload="metadata"
+                controlsList="nodownload noremoteplayback"
+                disablePictureInPicture
+                className="mt-6 aspect-video w-full rounded-2xl object-cover"
+                src="/Nelio.mp4"
+              />
+
+              <h3 className="mt-10 text-2xl font-bold text-green-300">
                 Vuoden 2024 klippi
               </h3>
 
               <video
                 controls
-                className="mt-6 w-full rounded-2xl"
+                preload="metadata"
+                controlsList="nodownload noremoteplayback"
+                disablePictureInPicture
+                className="mt-6 aspect-video w-full rounded-2xl object-cover"
                 src="/vuoden-2024-clippi.mp4"
               />
             </div>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {creatorServices.map((service) => (
-              <a
+              <div
                 key={service.title}
-                href={mailLink(service.title)}
-                className="rounded-3xl border border-green-400/20 bg-zinc-950 p-8 transition hover:scale-[1.01]"
+                className="rounded-3xl border border-green-400/20 bg-zinc-950 p-6 transition hover:scale-[1.01] sm:p-8"
               >
-                <h3 className="text-2xl font-bold text-green-300">
+                <a
+                  href={contactLink(service.title)}
+                  target="_blank"
+                  className="text-2xl font-bold text-green-300 hover:underline"
+                >
                   {service.title}
-                </h3>
+                </a>
 
-                <p className="mt-4 text-lg leading-8 text-zinc-300">
+                <p className="mt-4 text-base leading-8 text-zinc-300 sm:text-lg">
                   {service.text}
                 </p>
-              </a>
+
+                {service.video && (
+                  <video
+                    controls
+                    preload="metadata"
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                    className="mt-6 aspect-video w-full rounded-2xl object-cover"
+                    src={service.video}
+                  />
+                )}
+              </div>
             ))}
 
-            <div className="rounded-3xl border border-green-400/20 bg-zinc-950 p-8">
+            <div className="rounded-3xl border border-green-400/20 bg-zinc-950 p-6 sm:p-8">
               <h3 className="text-2xl font-bold text-green-300">
                 Tutut yhteistyökumppanit
               </h3>
@@ -469,42 +487,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PALVELUT */}
-
-      <section id="projektit" className="min-h-screen bg-black px-6 py-24">
+      <section id="projektit" className="bg-black px-5 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <p className="text-base uppercase tracking-[0.35em] text-orange-400">
+          <p className="text-sm uppercase tracking-[0.35em] text-orange-400 sm:text-base">
             03 / Keikkatyöt & Projektit
           </p>
 
-          <h2 className="mt-4 text-5xl font-black text-orange-200 md:text-7xl">
+          <h2 className="mt-4 text-4xl font-black text-orange-200 sm:text-5xl md:text-7xl">
             Käytännön palvelut.
           </h2>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {localServices.map((service) => (
               <div
                 key={service.title}
-                className="rounded-3xl border border-orange-500/20 bg-orange-950 p-8"
+                className="rounded-3xl border border-orange-500/20 bg-orange-950 p-6 sm:p-8"
               >
                 <h3 className="text-2xl font-bold text-orange-200">
                   {service.title}
                 </h3>
 
-                <p className="mt-4 text-lg leading-8 text-orange-100/70">
+                <p className="mt-4 text-base leading-8 text-orange-100/70 sm:text-lg">
                   {service.text}
                 </p>
 
                 {service.video && (
                   <video
                     controls
-                    className="mt-6 w-full rounded-2xl"
+                    preload="metadata"
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                    className="mt-6 aspect-video w-full rounded-2xl object-cover"
                     src={service.video}
                   />
                 )}
 
                 <a
-                  href={mailLink(service.title)}
+                  href={contactLink(service.title)}
+                  target="_blank"
                   className="mt-6 inline-block rounded-full bg-orange-400 px-6 py-3 font-bold text-black"
                 >
                   Lähetä sähköposti
@@ -515,25 +535,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PALAUTE */}
-
-      <section className="bg-zinc-950 px-6 py-24">
+      <section className="bg-zinc-950 px-5 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="text-base uppercase tracking-[0.35em] text-zinc-500">
+          <p className="text-sm uppercase tracking-[0.35em] text-zinc-500 sm:text-base">
             04 / Palaute
           </p>
 
-          <h2 className="mt-4 text-5xl font-black">
+          <h2 className="mt-4 text-4xl font-black sm:text-5xl">
             Palaute sivustosta.
           </h2>
 
-          <p className="mt-6 text-xl leading-9 text-zinc-300">
+          <p className="mt-6 text-base leading-8 text-zinc-300 sm:text-xl sm:leading-9">
             Kaikki palaute nettisivustosta, yhteistyöideoista tai
             kehitysehdotuksista on tervetullutta.
           </p>
 
           <a
-            href={mailLink("Palaute nettisivustosta")}
+            href={contactLink("Palaute nettisivustosta")}
+            target="_blank"
             className="mt-10 inline-block rounded-full bg-white px-10 py-5 text-lg font-bold text-black transition hover:scale-105"
           >
             Lähetä palautetta
